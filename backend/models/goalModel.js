@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const goalSchema = mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      requred: true,
+      ref: 'User',
+    },
     text: {
       type: String,
       required: [true, 'Please add the text'],
@@ -11,6 +16,5 @@ const goalSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-mongoose.set('strictQuery', true);
 
 module.exports = mongoose.model('Goal', goalSchema);
