@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Spinner from '../components/Spinner';
 import { FaSignInAlt } from 'react-icons/fa';
+import { login, reset } from '../features/auth/authSlice';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -9,6 +14,23 @@ function Login() {
 
   const { email, password } = formData;
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    if (isSuccess || user) {
+      navigate('/');
+    }
+    dispatch(reset());
+  }, [isError, isSuccess, user, message, dispatch, navigate]);
+
   const handleChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -17,15 +39,21 @@ function Login() {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+    const userData = { email, password };
+    dispatch(login(userData));
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
   return (
     <>
       <section className='heading'>
         <h1>
-          <FaSignInAlt />
+          <FaSignInAlt style={{ marginRight: '0.3rem' }} />
           Login
         </h1>
-        <p>Login and Statrt setting Goals</p>
+        <p>Login and Start setting Goals</p>
       </section>
 
       <section className='form'>
@@ -43,7 +71,7 @@ function Login() {
           </div>
           <div className='form-group'>
             <input
-              type='text'
+              type='password'
               className='form-control'
               id='password'
               name='password'
