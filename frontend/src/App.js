@@ -8,6 +8,7 @@ import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Protect from './components/Protect';
 import PageNotFound from './Pages/PageNotFound';
+import InterMediatoryAuth from './Pages/InterMediattoryAuth';
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
             <Route path='/' element={<Protect><Dashboard /></Protect>} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
-            <Route path='*' element={<PageNotFound />}/>
+            <Route path='/auth' element={<InterMediatoryAuth />} />
+            <Route path='*' element={<PageNotFound />} />
           </Routes>
         </div>
       </Router>
