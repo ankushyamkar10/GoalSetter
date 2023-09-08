@@ -7,6 +7,7 @@ import Dashboard from './Pages/Dashboard';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Protect from './components/Protect';
+import PageNotFound from './Pages/PageNotFound';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path='/' element={<Protect><Dashboard /></Protect>} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
+            <Route path='*' element={<PageNotFound />}/>
           </Routes>
         </div>
       </Router>

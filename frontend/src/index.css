@@ -226,3 +226,15 @@ h3 {
     gap: 10px;
   }
 }
+
+.pagenotfound{
+  display: flex;
+  flex-direction:column ;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+.pagenotfound img {
+  width: 18rem;
+  height: 18rem;
+}
