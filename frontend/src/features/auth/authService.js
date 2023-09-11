@@ -13,6 +13,7 @@ const register = async (userData) => {
 };
 
 const login = async (userData) => {
+  console.log(userData);
   const response = await axios.post(API_URL + 'login', userData);
 
   if (response.data) {
@@ -21,6 +22,8 @@ const login = async (userData) => {
 
   return response.data;
 };
+
+
 
 const logout = async () => {
   localStorage.removeItem('user');

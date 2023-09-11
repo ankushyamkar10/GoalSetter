@@ -5,6 +5,10 @@ import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
 import { FaSignInAlt } from 'react-icons/fa';
 import { login, reset } from '../features/auth/authSlice';
+import GLogin from '../assets/Glogin.svg'
+import InterMediatoryAuth from './InterMediattoryAuth';
+import axios from 'axios';
+
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -31,6 +35,11 @@ function Login() {
     dispatch(reset());
   }, [isError, isSuccess, user, dispatch, navigate]);
 
+  const handleGetUrl = async () => {
+    const response = await axios.get('http://localhost:5000/api/users/getGoogleOAUthUrl')
+    window.location.assign(response.data)
+  }
+
   const handleChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -50,11 +59,19 @@ function Login() {
     <>
       <section className='heading'>
         <h1>
-          <FaSignInAlt style={{ marginRight: '0.3rem' }} />
           Login
         </h1>
-        <p>Login and Start setting Goals</p>
+        <p>Start setting Goals</p>
       </section>
+
+      <section className='Glogin' onClick={handleGetUrl}>
+        <img src={GLogin} alt="" />
+        <div>Google</div>
+      </section>
+
+      <div style={{ margin: '0 auto 2rem' }}>
+        OR
+      </div>
 
       <section className='form'>
         <form onSubmit={handleSubmit}>

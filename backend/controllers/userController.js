@@ -2,14 +2,15 @@ const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
-const { default: axios } = require('axios')
+const { default: axios } = require('axios');
+const { response } = require('express');
 
 //@desc Register a User
 //@route POST /api/users
 //@cccess Public
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-  console.log(email);
+
   if (!name || !email || !password) {
     res.status(400);
     throw new Error('Please fill in all fields');
@@ -53,27 +54,42 @@ const registerUser = asyncHandler(async (req, res) => {
 //@route POST /api/users/login
 //@cccess Public
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, googleId } = req.body;
 
-  const user = await User.findOne({ email });
+  if (password) {
+    const user = await User.findOne({ email });
 
-  if (user && (await bcrypt.compare(password, user.password)))
-    res.status(201).json({
-      //201 status : OK
-      _id: user.id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user.id),
-    });
-  else {
-    res.status(400);
-    throw new Error('Invalid credentials!');
+    if (user && user.password && await bcrypt.compare(password, user.password)) {
+
+      res.status(201).json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user.id),
+      });
+    }
+
   }
-});
+  else {
+    const user = await User.findOne({ googleId });
+    if (user) {
+      res.status(201).json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user.id),
+      });
+    }
+  }
+
+  res.status(400).json({ message: "Invalid Credentials" })
+
+})
 
 //@desc Get USer Data
 //@route GET /api/users/me
 //@access Private
+
 const getUser_Me = asyncHandler(async (req, res) => {
   //req.user is user whose token is verified that comes from the authMiddleWare
   const { _id, name, email } = await User.findById(req.user.id);
@@ -91,8 +107,8 @@ const getUser_Me = asyncHandler(async (req, res) => {
 
 const getGoogleOAuthUrl = asyncHandler(async (req, res) => {
   const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth'
-
-  const url = oauth2Endpoint + "?client_id=" + process.env.GOOGLE_CLIENT_ID + `{&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}` + "&response_type=code&include_granted_scopes=true&state=pass-through-value&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.profile"
+  const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } = process.env
+  const url = oauth2Endpoint + "?client_id=" + GOOGLE_CLIENT_ID + '&redirect_uri=' + GOOGLE_REDIRECT_URI + "&response_type=code&include_granted_scopes=true&state=pass-through-value&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.email"
   res.status(200).json(url)
 })
 
@@ -109,20 +125,56 @@ const generateToken = (id) => {
 //@access Public
 const getGoogleAuthCode = asyncHandler(async (req, res) => {
   const { code } = req.body
+
   const url = `https://oauth2.googleapis.com/token?client_id=${process.env.GOOGLE_CLIENT_ID}&client_secret=${process.env.GOOGLE_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&grant_type=authorization_code`;
-  console.log(url)
+
   try {
     const response = await axios.post(url, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-    const {
-      data: { access_token },
-    } = response;
-    res.status(200).json(response)
+    const { access_token } = response?.data
+
+    const googleUserInfo = await axios.get(
+      `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${access_token}`
+    );
+    const { id, name, email } = googleUserInfo.data
+
+    if (!name) {
+      res.status(400).json({ message: "Please complete your Google first or Login via email" })
+    }
+
+    const user = await User.findOne({ googleId: id })
+    if (user) {
+      res.status(201).json({
+        //201 status : OK
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        googleId: user.googleId,
+      })
+    }
+    else if (await User.findOne({ email })) {
+      const userByEmail = await User.findOne({ email })
+      res.status(400).json({ message: "Your email is registered, please login via email instead of Google" })
+    }
+    else {
+      const newUser = await User.create({
+        name,
+        email,
+        googleId: id
+      });
+      res.status(201).json({
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        googleId: newUser.googleId,
+      })
+    }
   } catch (error) {
-    res.status(500).json({ message: error })
+    console.log(error);
+    res.status(500).json(error)
   }
 })
 

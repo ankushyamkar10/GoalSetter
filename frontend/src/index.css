@@ -78,7 +78,7 @@ h3 {
 .heading {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 50px;
+  /* margin-bottom: 50px; */
   padding: 0 20px;
 }
 
@@ -123,7 +123,7 @@ h3 {
 .form-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid #807e7e;
   border-radius: 5px;
   margin-bottom: 10px;
   font-family: inherit;
@@ -237,4 +237,24 @@ h3 {
 .pagenotfound img {
   width: 18rem;
   height: 18rem;
+}
+
+.Glogin{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 2rem auto;
+  padding: 1rem 1.5rem;
+  border: 1px solid gray;
+  border-radius: 5rem;
+  cursor: pointer;
+}
+.Glogin:hover{
+  border: 1px solid black;
+  background: #000;
+  color: white;
+}
+.Glogin img{
+  margin-right: 0.5rem;
 }

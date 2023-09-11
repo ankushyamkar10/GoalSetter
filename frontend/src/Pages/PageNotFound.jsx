@@ -1,9 +1,8 @@
 import React from 'react'
-import pnf from './pagenotfound.jpg'
+import pnf from '../assets/pagenotfound.jpg'
 
 const PageNotFound = () => {
   const handleGoBack = () => {
-    console.log("fghb n");
     window.location.href = "/"
   }
   return (
