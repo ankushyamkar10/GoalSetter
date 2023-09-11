@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
 import { FaSignInAlt } from 'react-icons/fa';
 import { login, reset } from '../features/auth/authSlice';
-import GLogin from '../assets/Glogin.svg'
+import GLogin from '../assets/Google.svg'
 import InterMediatoryAuth from './InterMediattoryAuth';
 import axios from 'axios';
 
