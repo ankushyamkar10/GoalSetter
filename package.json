@@ -8,7 +8,8 @@
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
-    "build": "npm install && cd frontend && npm install && npm run build",
+    "install-server": "npm install",
+    "build": "cd frontend && npm install && npm run build",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "",
