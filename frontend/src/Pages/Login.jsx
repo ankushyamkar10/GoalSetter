@@ -36,7 +36,7 @@ function Login() {
   }, [isError, isSuccess, user, dispatch, navigate]);
 
   const handleGetUrl = async () => {
-    const response = await axios.get('http://localhost:5000/api/users/getGoogleOAUthUrl')
+    const response = await axios.get('https://goalsetter-backend-w8zw.onrender.com/api/users/getGoogleOAUthUrl')
     window.location.assign(response.data)
   }
 
