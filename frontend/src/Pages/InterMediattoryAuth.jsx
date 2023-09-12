@@ -27,9 +27,9 @@ const InterMediatoryAuth = () => {
     useEffect(() => {
         async function fetchAccessToken() {
             const response = await axios.post('https://goalsetter-backend-w8zw.onrender.com/api/users/getGoogleAuthCode', { code })
-            return response.data
+            return response.data;
         }
-        fetchAccessToken().then((res) => { dispatch(login(res)) }).catch((e) => { toast.error(e); window.location.href = '/' })
+        fetchAccessToken().then((res) => { dispatch(login(res)) }).catch((e) => { toast.error(e.message); window.location.href = '/' })
     }, [])
 
 

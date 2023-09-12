@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
 import { FaSignInAlt } from 'react-icons/fa';
@@ -103,6 +103,9 @@ function Login() {
             </button>
           </div>
         </form>
+        <Link to='/updatePassword'>
+          <div className='forgot-password'>Forgot password ?</div>
+        </Link>
       </section>
     </>
   );

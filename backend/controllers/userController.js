@@ -173,8 +173,41 @@ const getGoogleAuthCode = asyncHandler(async (req, res) => {
       })
     }
   } catch (error) {
-    console.log(error);
-    res.status(500).json(error)
+    res.status(500).json({ message: error })
+  }
+})
+
+const updatePassword = asyncHandler(async (req, res) => {
+  const { email, password } = req.body
+
+
+  const user = await User.findOne({ email })
+
+  if (user && user.password) {
+    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    const updatedUser = await User.findByIdAndUpdate(user._id, { password: hashedPassword }, { new: true })
+
+    if (updatedUser) {
+      console.log(updatedUser);
+      res.status(201).json({
+        _id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        token: generateToken(user.id),
+      });
+    }
+    else {
+      res.status(500).json({ message: "Something Went Wrong!" })
+    }
+  }
+  else if (user && user.googleId) {
+    res.status(403).json({ message: "You can't change the password for a logged in with Google account" })
+  }
+  else {
+    res.status(404).json({ message: "User Not found!" })
   }
 })
 
@@ -183,5 +216,6 @@ module.exports = {
   loginUser,
   getUser_Me,
   getGoogleOAuthUrl,
-  getGoogleAuthCode
+  getGoogleAuthCode,
+  updatePassword
 };

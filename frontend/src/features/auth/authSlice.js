@@ -23,10 +23,10 @@ export const register = createAsyncThunk(
         error.message ||
         error.toString();
 
-        if (error.response.data.message) {
-          return thunkAPI.rejectWithValue(error.response.data.message);
-        }
-        return thunkAPI.rejectWithValue(message);
+      if (error.response.data.message) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -34,6 +34,21 @@ export const register = createAsyncThunk(
 export const login = createAsyncThunk('/auth/login', async (user, thunkAPI) => {
   try {
     return await authService.login(user);
+  } catch (error) {
+    const message =
+      (error.reponse && error.reponse.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    if (error.response.data.message) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+export const forgotPassword = createAsyncThunk('/auth/forgotPassword', async (userData, thunkAPI) => {
+  try {
+    return await authService.forgotPassword(userData);
   } catch (error) {
     const message =
       (error.reponse && error.reponse.data && error.response.data.message) ||
@@ -86,6 +101,19 @@ export const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      }).addCase(forgotPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

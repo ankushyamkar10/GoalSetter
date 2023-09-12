@@ -258,3 +258,10 @@ h3 {
 .Glogin img{
   margin-right: 0.5rem;
 }
+
+.forgot-password{
+  margin: 1rem auto;
+}
+.forgot-password:hover{
+  color: #777;
+}
